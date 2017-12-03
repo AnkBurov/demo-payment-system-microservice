@@ -1,8 +1,11 @@
 /.idea/
-/.gradle/
+**/.gradle/**
 /build/
 /class/
 /target/
 /out/
 /example/mysql/.gradle/
 db
+**/build/**
+**/out/**
+**/logs/**
