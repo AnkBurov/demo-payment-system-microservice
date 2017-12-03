@@ -4,4 +4,5 @@ include 'config'
 include 'registry'
 include 'thirdparty-service-api'
 include 'thirdparty-service'
+include 'integration-test'
 

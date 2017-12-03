@@ -43,7 +43,7 @@ services:
     build:
       payment-system
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
     depends_on:
       config:
         condition: service_healthy
