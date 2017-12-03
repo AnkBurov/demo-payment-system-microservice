@@ -1,0 +1,55 @@
+version: '2.3'
+
+services:
+  config:
+    build:
+      config
+    ports:
+      - 8888:8888
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/foo/development"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  registry:
+    build:
+      registry
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    depends_on:
+      config:
+        condition: service_healthy
+    ports:
+      - 8761:8761
+
+  thirdparty-service:
+    build:
+      thirdparty-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/thirdparty"]
+    depends_on:
+      config:
+        condition: service_healthy
+      registry:
+        condition: service_healthy
+    ports:
+      - 8081:8081
+
+  payment-system:
+    build:
+      payment-system
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+    depends_on:
+      config:
+        condition: service_healthy
+      registry:
+        condition: service_healthy
+      thirdparty-service:
+        condition: service_healthy
+    ports:
+      - 8080:8080

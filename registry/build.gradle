@@ -1,0 +1,43 @@
+plugins {
+    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id "com.palantir.docker" version "0.13.0"
+    id "com.palantir.docker-run" version "0.13.0"
+}
+
+group 'io.demo'
+
+apply plugin: 'java'
+//apply plugin: "org.springframework.boot"
+
+sourceCompatibility = 1.8
+
+ext {
+    buildLocation = "build/libs/"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-netflix-eureka-server', version: '1.4.0.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '1.4.0.RELEASE'
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.6.RELEASE")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+docker {
+    name "${project.name}"
+    copySpec.from(buildLocation).into(buildLocation)
+    dependsOn build
+}
+
+dockerRun {
+    name "${project.name}"
+    image "${project.name}"
+    ports "8080:8080"
+}
+
+project.tasks["dockerRemoveContainer"].dependsOn "dockerStop"
+project.tasks["dockerRun"].dependsOn "docker", "dockerRemoveContainer"

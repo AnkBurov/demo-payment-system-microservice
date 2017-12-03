@@ -1,5 +1,37 @@
-version: '2.1'
+version: '3.4'
 
 services:
-    demo-payment-system:
-        image: 'demo-payment-system'
+  config:
+    build:
+      config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+
+  registry:
+    build:
+      registry
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+    depends_on:
+      - config
+
+  thirdparty-service:
+    build:
+      thirdparty-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+    depends_on:
+      - config
+      - registry
+
+  payment-system:
+    build:
+      payment-system
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+    depends_on:
+      - config
+      - registry
+      - thirdparty-service
+    ports:
+      - 8080:8080
